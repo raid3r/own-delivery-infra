@@ -1,0 +1,33 @@
+## Secrets — never commit these
+.env
+.env.local
+*.env
+secrets/
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+## Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+## Ansible
+*.retry
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Logs
+logs/
+*.log

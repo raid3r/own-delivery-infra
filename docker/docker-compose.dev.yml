@@ -1,0 +1,28 @@
+services:
+
+  db:
+    ports:
+      - "1433:1433"
+    environment:
+      MSSQL_PID: Developer
+
+  backend:
+    build:
+      target: build
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ../../own-delivery-backend/src:/src:ro
+    command: dotnet watch run --project OwnDeliveryApiP33/OwnDeliveryApiP33.csproj
+
+  design:
+    build:
+      target: dev
+    command: npm run storybook
+    volumes:
+      - ../../own-delivery-design:/app:ro
+      - /app/node_modules
+
+  nginx:
+    profiles:
+      - with-nginx

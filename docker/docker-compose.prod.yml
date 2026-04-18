@@ -1,0 +1,39 @@
+services:
+
+  db:
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2g
+
+  backend:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512m
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  design:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128m
+
+  nginx:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64m
