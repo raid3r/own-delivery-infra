@@ -7,6 +7,12 @@ INFRA_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORKSPACE_DIR="$(dirname "$INFRA_DIR")"
 ENV_FILE="${INFRA_DIR}/.env"
 
+# Use the real .NET SDK installed under ~/.dotnet (not the stub at /usr/bin/dotnet)
+if [[ -d "${HOME}/.dotnet" ]]; then
+    export DOTNET_ROOT="${HOME}/.dotnet"
+    export PATH="${DOTNET_ROOT}:${PATH}"
+fi
+
 log()  { echo "[$(date '+%H:%M:%S')] $*"; }
 err()  { echo "[ERROR] $*" >&2; }
 die()  { err "$*"; exit 1; }
