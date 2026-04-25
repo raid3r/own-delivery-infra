@@ -35,24 +35,31 @@ if [[ "$SKIP_PULL" == false ]]; then
     fi
 fi
 
-# ── 2. Build Docker image ─────────────────────────────────────────────────────
-log "Building Docker image..."
+# ── 2. Build Docker images ────────────────────────────────────────────────────
+GIT_SHA="$(git -C "$REPO_DIR" rev-parse --short HEAD)"
+
+log "Building SDK (build) stage for migrations..."
+docker build --target build \
+    -t "own-delivery-backend:build" \
+    "$REPO_DIR"
+
+log "Building runtime image..."
 docker build \
     -t "own-delivery-backend:latest" \
-    -t "own-delivery-backend:$(git -C "$REPO_DIR" rev-parse --short HEAD)" \
+    -t "own-delivery-backend:${GIT_SHA}" \
     "$REPO_DIR"
 
 # ── 3. Apply DB migrations ────────────────────────────────────────────────────
 log "Waiting for DB to be healthy..."
-docker compose -f "${INFRA_DIR}/docker/docker-compose.yml" up -d db
-timeout 60 bash -c 'until docker compose -f '"${INFRA_DIR}/docker/docker-compose.yml"' exec -T db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" &>/dev/null; do sleep 2; done'
+docker compose --env-file "${INFRA_DIR}/.env" -f "${INFRA_DIR}/docker/docker-compose.yml" up -d db
+timeout 60 bash -c 'until docker inspect own-delivery-db --format "{{.State.Health.Status}}" 2>/dev/null | grep -q healthy; do sleep 2; done'
 
 log "Running EF migrations..."
 docker run --rm \
-    --network own-delivery-infra_own-delivery-net \
+    --network docker_own-delivery-net \
     -e "ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}" \
-    "own-delivery-backend:latest" \
-    dotnet OwnDeliveryApiP33.dll migrate || log "Migration skipped (no migrate command wired up yet)"
+    "own-delivery-backend:build" \
+    dotnet ef database update --project OwnDeliveryApiP33/OwnDeliveryApiP33.csproj
 
 # ── 4. Restart backend service ────────────────────────────────────────────────
 log "Restarting backend container..."

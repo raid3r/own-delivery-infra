@@ -9,6 +9,7 @@ Docker Compose + deploy scripts for the OwnDelivery platform.
 ./scripts/deploy-all.sh  # pull, build, migrate, start all services
 ```
 
+Локальна розробка: [docs/local-development.md](docs/local-development.md)
 Full documentation: [docs/deployment.md](docs/deployment.md)
 
 ## Services

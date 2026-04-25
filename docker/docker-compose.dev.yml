@@ -11,9 +11,19 @@ services:
       target: build
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      NUGET_PACKAGES: /nuget
     volumes:
-      - ../../own-delivery-backend/src:/src:ro
-    command: dotnet watch run --project OwnDeliveryApiP33/OwnDeliveryApiP33.csproj
+      - ../../own-delivery-backend/src:/src
+      - ../volumes/nuget:/nuget
+      - ../../own-delivery-backend/src/OwnDeliveryApiP33/obj:/src/OwnDeliveryApiP33/obj
+      - ../../own-delivery-backend/src/OwnDeliveryApiP33/bin:/src/OwnDeliveryApiP33/bin
+    command: >
+      sh -c "
+        dotnet restore OwnDeliveryApiP33/OwnDeliveryApiP33.csproj &&
+        dotnet ef database update --project OwnDeliveryApiP33/OwnDeliveryApiP33.csproj &&
+        dotnet watch run --project OwnDeliveryApiP33/OwnDeliveryApiP33.csproj --no-launch-profile -- --urls http://+:8080
+      "
 
   design:
     build:

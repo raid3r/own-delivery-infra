@@ -31,3 +31,6 @@ Thumbs.db
 ## Logs
 logs/
 *.log
+
+## Local volumes (host-mounted data, not for VCS)
+volumes/
