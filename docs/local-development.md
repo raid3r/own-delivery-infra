@@ -62,9 +62,10 @@ docker compose \
 Контейнер готовий коли побачиш у логах:
 ```
 own-delivery-backend | dotnet watch 🚀 Started
-own-delivery-backend |       Now listening on: http://[::]:8080
 own-delivery-backend |       Application started. Press Ctrl+C to shut down.
 ```
+
+> `:8080` у логах — внутрішній порт контейнера. Зовні API доступне на `BACKEND_PORT` з `.env` (за замовчуванням **8095**).
 
 Swagger: [http://localhost:8095/swagger](http://localhost:8095/swagger)
 
